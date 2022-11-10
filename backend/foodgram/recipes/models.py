@@ -37,7 +37,9 @@ class Recipe(models.Model):
         'Tag',
         verbose_name='Теги'
     )
-    cooking_time = models.PositiveSmallIntegerField()
+    cooking_time = models.PositiveSmallIntegerField(
+        verbose_name='Время приготовления'
+    )
 
 
 class Tag(models.Model):
