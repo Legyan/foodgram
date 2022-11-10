@@ -74,4 +74,6 @@ class Ingredient(models.Model):
         max_length=200,
         verbose_name='Единицы измерения'
     )
-    amount = models.PositiveSmallIntegerField()
+    amount = models.PositiveSmallIntegerField(
+        verbose_name='Количество'
+    )
