@@ -41,6 +41,9 @@ class Recipe(models.Model):
         verbose_name='Время приготовления'
     )
 
+    def __str__(self):
+        return self.name
+
 
 class Tag(models.Model):
     """
@@ -54,11 +57,15 @@ class Tag(models.Model):
     )
     color = models.CharField(
         max_length=7,
+        unique=True,
         verbose_name='Цветовой HEX-код'
     )
     slug = models.SlugField(
-        unique=True
+        unique=True,
     )
+
+    def __str__(self):
+        return self.name
 
 
 class Ingredient(models.Model):
@@ -68,12 +75,25 @@ class Ingredient(models.Model):
 
     name = models.CharField(
         max_length=200,
-        verbose_name='Название ингредиента'
+        verbose_name='Название ингредиента',
     )
     measurement_unit = models.CharField(
         max_length=200,
         verbose_name='Единицы измерения'
     )
     amount = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
         verbose_name='Количество'
     )
+
+    def __str__(self):
+        return self.name + ',' + self.measurement_unit
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=('name', 'measurement_unit'),
+                name='unique set of name and measurment_unit'
+            )
+        ]

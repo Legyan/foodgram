@@ -27,6 +27,7 @@ class IngredientAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'measurement_unit', 'amount')
     list_filter = ('id', 'name', 'measurement_unit', 'amount')
     search_fields = ('name', 'measurement_unit', 'amount')
+    list_per_page = 500
     empty_value_display = '-пусто-'
 
 
