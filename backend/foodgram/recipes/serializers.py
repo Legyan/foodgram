@@ -8,6 +8,7 @@ class RecipeSerialzer(serializers.ModelSerializer):
     """Сериализатор рецептов"""
 
     author = SlugRelatedField(slug_field='username', read_only=True)
+    tag = SlugRelatedField(slug_field='slug', read_only=True)
     image = serializers.CharField(read_only=True)
 
     class Meta:
