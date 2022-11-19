@@ -2,9 +2,9 @@ from rest_framework import viewsets
 from rest_framework.pagination import LimitOffsetPagination
 
 from recipes.models import Ingredient, Recipe, Tag
-from recipes.serializers import (IngredienSerialzer,
-                                 RecipeSerialzer,
-                                 TagSerialzer)
+from api.serializers import (IngredienSerialzer,
+                             RecipeSerialzer,
+                             TagSerialzer)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
