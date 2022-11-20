@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from rest_framework.relations import SlugRelatedField
 
 from recipes.models import Recipe, RecipeIngredient, Tag
+from users.models import User
 
 
 class TagSerialzer(serializers.ModelSerializer):
@@ -25,7 +25,7 @@ class IngredienSerialzer(serializers.ModelSerializer):
 
     class Meta:
         model = RecipeIngredient
-        fields = ['id', 'name', 'measurement_unit', 'amount']
+        fields = ('id', 'name', 'measurement_unit', 'amount')
 
     def get_id(self, obj):
         return obj.ingredient.id
@@ -37,12 +37,22 @@ class IngredienSerialzer(serializers.ModelSerializer):
         return obj.ingredient.measurement_unit
 
 
+class UserSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор пользователей
+    """
+
+    class Meta:
+        model = User
+        fields = ('email', 'id', 'username', 'first_name', 'last_name')
+
+
 class RecipeSerialzer(serializers.ModelSerializer):
     """
     Сериализатор рецептов
     """
 
-    author = SlugRelatedField(slug_field='username', read_only=True)
+    author = UserSerializer()
     tags = TagSerialzer(many=True, read_only=True)
     image = serializers.CharField(read_only=True)
     ingredients = IngredienSerialzer(many=True,

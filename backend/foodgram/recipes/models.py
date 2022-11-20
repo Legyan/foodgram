@@ -1,9 +1,8 @@
 import re
-from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
 
-User = get_user_model()
+from users.models import User
 
 
 class Recipe(models.Model):
@@ -119,7 +118,7 @@ class Ingredient(models.Model):
     )
 
     def __str__(self):
-        return self.name + ',' + self.measurement_unit
+        return self.name + ', ' + self.measurement_unit
 
     class Meta:
         constraints = [
