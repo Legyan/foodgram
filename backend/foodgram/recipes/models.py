@@ -70,9 +70,9 @@ class Tag(models.Model):
         return self.name
 
     def clean(self):
-        if not re.fullmatch('#[0-9]{6}', self.color):
+        if not re.fullmatch(r'#[0-9A-Fa-f]{6}', self.color):
             raise ValidationError(
-                'Цвет толжен быть представлен в HEX формате'
+                'Цвет должен быть в HEX формате (#[0-9A-Fa-f]]{6})'
             )
 
 
