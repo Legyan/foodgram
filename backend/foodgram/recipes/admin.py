@@ -1,13 +1,19 @@
 from django.contrib import admin
 
-from recipes.models import Ingredient, Recipe, Tag
+from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
+
+
+class IngredientInline(admin.TabularInline):
+    model = RecipeIngredient
+    extra = 1
 
 
 class RecipesAdmin(admin.ModelAdmin):
     """Админка рецептов"""
 
+    inlines = (IngredientInline,)
     list_display = ('id', 'author', 'name', 'image', 'text', 'cooking_time')
-    list_filter = ('id', 'name', 'text')
+    list_filter = ('name', 'tags')
     search_fields = ('name', 'text')
     empty_value_display = '-пусто-'
 
@@ -16,7 +22,6 @@ class TagAdmin(admin.ModelAdmin):
     """Админка тегов"""
 
     list_display = ('id', 'name', 'color', 'slug')
-    list_filter = ('id', 'name', 'color', 'slug')
     search_fields = ('name', 'color', 'slug')
     empty_value_display = '-пусто-'
 
@@ -24,9 +29,9 @@ class TagAdmin(admin.ModelAdmin):
 class IngredientAdmin(admin.ModelAdmin):
     """Админка ингредиентов"""
 
-    list_display = ('id', 'name', 'measurement_unit', 'amount')
-    list_filter = ('id', 'name', 'measurement_unit', 'amount')
-    search_fields = ('name', 'measurement_unit', 'amount')
+    list_display = ('id', 'name', 'measurement_unit')
+    list_filter = ('measurement_unit',)
+    search_fields = ('name', 'measurement_unit')
     list_per_page = 500
     empty_value_display = '-пусто-'
 

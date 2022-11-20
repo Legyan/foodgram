@@ -15,6 +15,5 @@ class Command(BaseCommand):
                 Ingredient(
                     name=row[0],
                     measurement_unit=row[1],
-                    amount=0
                 ).save()
             print('Done')

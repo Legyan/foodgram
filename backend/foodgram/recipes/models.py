@@ -32,7 +32,7 @@ class Recipe(models.Model):
         verbose_name='Описание рецепта',
     )
     ingredients = models.ManyToManyField(
-        'Ingredient',
+        'Ingredient', through='RecipeIngredient',
         verbose_name='Ингридиенты'
     )
     tags = models.ManyToManyField(
@@ -45,6 +45,29 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class RecipeIngredient(models.Model):
+    """
+    Модель ингредиентов рецепта
+    """
+
+    recipe = models.ForeignKey(
+        Recipe,
+        blank=False,
+        null=False,
+        on_delete=models.CASCADE,
+        related_name="recipe_ingredient_related"
+    )
+    ingredient = models.ForeignKey(
+        'Ingredient',
+        blank=False, null=False,
+        on_delete=models.CASCADE,
+        related_name='recipes'
+    )
+    amount = models.PositiveSmallIntegerField(
+        verbose_name='Количество',
+    )
 
 
 class Tag(models.Model):
@@ -72,7 +95,7 @@ class Tag(models.Model):
     def clean(self):
         if not re.fullmatch(r'#[0-9A-Fa-f]{6}', self.color):
             raise ValidationError(
-                'Цвет должен быть в HEX формате (#[0-9A-Fa-f]]{6})'
+                'Цвет должен быть в HEX формате (#[0-9A-Fa-f]{6})'
             )
 
 
