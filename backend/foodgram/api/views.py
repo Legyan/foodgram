@@ -1,10 +1,13 @@
 from rest_framework import viewsets
 from rest_framework.pagination import LimitOffsetPagination
+from django_filters.rest_framework import DjangoFilterBackend
 
-from recipes.models import Ingredient, Recipe, Tag
+from api.filters import RecipeFilter
+from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (IngredientSerializer,
                              RecipeSerialzer,
                              TagSerialzer)
+from recipes.models import Ingredient, Recipe, Tag
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -13,8 +16,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """
 
     queryset = Recipe.objects.all()
+    permission_classes = (IsAuthorOrReadOnly,)
     serializer_class = RecipeSerialzer
     pagination_class = LimitOffsetPagination
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = RecipeFilter
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
