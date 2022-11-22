@@ -6,3 +6,4 @@ Pillow==9.3.0
 asgiref==3.5.2
 django-filter-22.1
 djoser==2.1.0
+drf-extra-fields-3.4.1

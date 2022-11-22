@@ -1,10 +1,21 @@
 from rest_framework import serializers
+from drf_extra_fields.fields import Base64ImageField
 
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 from users.models import User
 
 
-class TagSerialzer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор пользователей
+    """
+
+    class Meta:
+        model = User
+        fields = ('email', 'id', 'username', 'first_name', 'last_name')
+
+
+class TagSerializer(serializers.ModelSerializer):
     """
     Сериализатор тегов
     """
@@ -24,9 +35,9 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'measurement_unit')
 
 
-class RecipeIngredienSerializer(serializers.ModelSerializer):
+class ReadRecipeIngredienSerializer(serializers.ModelSerializer):
     """
-    Сериализатор ингредиентов рецепта
+    Сериализатор для отображения ингредиентов рецепта
     """
 
     id = serializers.SerializerMethodField()
@@ -47,25 +58,27 @@ class RecipeIngredienSerializer(serializers.ModelSerializer):
         return obj.ingredient.measurement_unit
 
 
-class UserSerializer(serializers.ModelSerializer):
+class WriteRecipeIngredienSerializer(serializers.ModelSerializer):
     """
-    Сериализатор пользователей
+    Сериализатор для определения ингредиентов рецепта
     """
+
+    id = serializers.IntegerField()
 
     class Meta:
-        model = User
-        fields = ('email', 'id', 'username', 'first_name', 'last_name')
+        model = RecipeIngredient
+        fields = ('id', 'amount')
 
 
-class RecipeSerialzer(serializers.ModelSerializer):
+class ReadRecipeSerializer(serializers.ModelSerializer):
     """
-    Сериализатор рецептов
+    Сериализатор для отображения рецептов
     """
 
     author = UserSerializer()
-    tags = TagSerialzer(many=True, read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
     image = serializers.CharField(read_only=True)
-    ingredients = RecipeIngredienSerializer(
+    ingredients = ReadRecipeIngredienSerializer(
         many=True,
         read_only=True,
         source='recipe_ingredient_related'
@@ -74,3 +87,43 @@ class RecipeSerialzer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = '__all__'
+
+
+class WriteRecipeSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для определения рецептов
+    """
+
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(),
+        many=True
+    )
+    image = Base64ImageField()
+    ingredients = WriteRecipeIngredienSerializer(many=True)
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'ingredients', 'tags', 'image',
+            'name', 'text', 'cooking_time'
+        )
+
+    def create(self, validated_data):
+        recipe = Recipe.objects.create(
+            author=self.context.get('request').user,
+            name=validated_data.pop('name'),
+            image=validated_data.pop('image'),
+            text=validated_data.pop('text'),
+            cooking_time=validated_data.pop('cooking_time'),
+        )
+        ingredients = validated_data.pop('ingredients')
+        tags = validated_data.pop('tags')
+        recipe.tags.set(tags)
+        for ingredient in ingredients:
+            RecipeIngredient.objects.create(
+                ingredient_id=ingredient['id'],
+                amount=ingredient['amount'],
+                recipe_id=recipe.id
+            )
+            recipe.tags.set(tags)
+        return recipe

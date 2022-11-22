@@ -5,8 +5,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from api.filters import RecipeFilter
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (IngredientSerializer,
-                             RecipeSerialzer,
-                             TagSerialzer)
+                             ReadRecipeSerializer,
+                             TagSerializer,
+                             WriteRecipeSerializer)
 from recipes.models import Ingredient, Recipe, Tag
 
 
@@ -17,10 +18,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all()
     permission_classes = (IsAuthorOrReadOnly,)
-    serializer_class = RecipeSerialzer
     pagination_class = LimitOffsetPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
+
+    def get_serializer_class(self):
+        if self.action in ('list', 'retrieve'):
+            return ReadRecipeSerializer
+        return WriteRecipeSerializer
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -32,7 +37,7 @@ class TagViewSet(viewsets.ModelViewSet):
     """
 
     queryset = Tag.objects.all()
-    serializer_class = TagSerialzer
+    serializer_class = TagSerializer
     pagination_class = LimitOffsetPagination
 
 
