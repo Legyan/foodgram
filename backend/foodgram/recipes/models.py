@@ -6,10 +6,7 @@ from users.models import User
 
 
 class Recipe(models.Model):
-    """
-    Модель рецептов
-    """
-
+    """Модель рецептов"""
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -47,10 +44,7 @@ class Recipe(models.Model):
 
 
 class RecipeIngredient(models.Model):
-    """
-    Модель ингредиентов рецепта
-    """
-
+    """Модель ингредиентов рецепта"""
     recipe = models.ForeignKey(
         Recipe,
         blank=False,
@@ -78,10 +72,7 @@ class RecipeIngredient(models.Model):
 
 
 class Tag(models.Model):
-    """
-    Модель тегов
-    """
-
+    """Модель тегов"""
     name = models.CharField(
         max_length=50,
         unique=True,
@@ -107,10 +98,7 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
-    """
-    Модель ингредиентов
-    """
-
+    """Модель ингредиентов"""
     name = models.CharField(
         max_length=200,
         verbose_name='Название ингредиента',
@@ -133,5 +121,46 @@ class Ingredient(models.Model):
             models.UniqueConstraint(
                 fields=('name', 'measurement_unit'),
                 name='unique set of name and measurment_unit'
+            )
+        ]
+
+
+class BaseRecipeUser(models.Model):
+    """Базовая модель списка рецептов пользователя"""
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='%(class)s_related'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='%(class)s_related'
+    )
+
+    class Meta:
+        abstract = True
+
+
+class ShoppingCart(BaseRecipeUser):
+    """Модель карты покупок пользователя"""
+    class Meta:
+        verbose_name = 'Список покупок'
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'recipe'),
+                name='unique recipe in user shoppingcart'
+            )
+        ]
+
+
+class Favorites(BaseRecipeUser):
+    """Модель избранного пользователя"""
+    class Meta:
+        verbose_name = 'Избранное'
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'recipe'),
+                name='unique recipe in user favorites'
             )
         ]
