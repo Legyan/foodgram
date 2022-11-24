@@ -1,6 +1,8 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
+from rest_framework.viewsets import GenericViewSet
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import response, status
@@ -34,14 +36,23 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 
-class TagViewSet(viewsets.ModelViewSet):
+class BaseListRetrieveViewSet(
+    ListModelMixin,
+    RetrieveModelMixin,
+    GenericViewSet
+):
+    """Базовый вьюсет для отображения списка объектов и конкретного объекта"""
+    pass
+
+
+class TagViewSet(BaseListRetrieveViewSet):
     """Вьюсет ингредиентов"""
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     pagination_class = LimitOffsetPagination
 
 
-class IngredientViewSet(viewsets.ModelViewSet):
+class IngredientViewSet(BaseListRetrieveViewSet):
     """Вьюсет ингредиентов"""
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer

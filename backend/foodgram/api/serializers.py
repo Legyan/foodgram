@@ -6,10 +6,7 @@ from users.models import Subscription, User
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор пользователей
-    """
-
+    """Сериализатор пользователей"""
     class Meta:
         model = User
         fields = ('email', 'id', 'username', 'first_name', 'last_name')
@@ -99,30 +96,21 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
 
 class TagSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор тегов
-    """
-
+    """Сериализатор тегов"""
     class Meta:
         model = Tag
         fields = '__all__'
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор ингредиентов
-    """
-
+    """Сериализатор ингредиентов"""
     class Meta:
         model = Ingredient
         fields = ('id', 'name', 'measurement_unit')
 
 
 class ReadRecipeIngredienSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор для отображения ингредиентов рецепта
-    """
-
+    """Сериализатор для отображения ингредиентов рецепта"""
     id = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     measurement_unit = serializers.SerializerMethodField()
@@ -142,10 +130,7 @@ class ReadRecipeIngredienSerializer(serializers.ModelSerializer):
 
 
 class WriteRecipeIngredienSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор для определения ингредиентов рецепта
-    """
-
+    """Сериализатор для определения ингредиентов рецепта"""
     id = serializers.IntegerField()
 
     class Meta:
@@ -154,10 +139,7 @@ class WriteRecipeIngredienSerializer(serializers.ModelSerializer):
 
 
 class ReadRecipeSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор для отображения рецептов
-    """
-
+    """Сериализатор для отображения рецептов"""
     author = UserSerializer()
     tags = TagSerializer(many=True, read_only=True)
     image = serializers.CharField(read_only=True)
@@ -173,10 +155,7 @@ class ReadRecipeSerializer(serializers.ModelSerializer):
 
 
 class WriteRecipeSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор для определения рецептов
-    """
-
+    """Сериализатор для определения рецептов"""
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         many=True
