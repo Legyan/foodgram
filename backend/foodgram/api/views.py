@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -12,10 +13,12 @@ from djoser.views import UserViewSet
 from api.filters import RecipeFilter
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (IngredientSerializer,
-                             ReadRecipeSerializer, SubscriptionSerializer,
+                             ReadRecipeSerializer,
+                             RecipeInSubscriptionSerializer,
+                             SubscriptionSerializer,
                              TagSerializer, UserSubscriptionSerializer,
                              WriteRecipeSerializer)
-from recipes.models import Ingredient, Recipe, Tag
+from recipes.models import Favorites, Ingredient, Recipe, ShoppingCart, Tag
 from users.models import Subscription, User
 
 
@@ -34,6 +37,83 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+#    def list(self, request, *args, **kwargs):
+#        queryset = self.filter_queryset(self.get_queryset())
+#
+#        page = self.paginate_queryset(queryset)
+#        if page is not None:
+#            serializer = self.get_serializer(
+#                page, many=True, context={'request': request}
+#            )
+#            return self.get_paginated_response(serializer.data)
+#
+#        serializer = self.get_serializer(
+#            queryset, many=True, context={'request': request}
+#        )
+#        return response.Response(serializer.data)
+
+    def add_to_list(self, model, user, recipe_id):
+        model.objects.create(
+            user=user,
+            recipe_id=recipe_id
+        )
+        recipe = Recipe.objects.get(pk=recipe_id)
+        serializer = RecipeInSubscriptionSerializer(instance=recipe)
+        return response.Response(
+            data=serializer.data,
+            status=status.HTTP_201_CREATED,
+        )
+
+    def remove_from_list(self, model, user, recipe_id):
+        model.objects.get(user=user, recipe_id=recipe_id).delete()
+        return response.Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(
+        detail=True,
+        methods=['POST', 'DELETE'],
+        permission_classes=[IsAuthenticated]
+    )
+    def shopping_cart(self, request, pk):
+        if request.method == 'POST':
+            if ShoppingCart.objects.filter(recipe_id=pk, user=request.user):
+                return response.Response(
+                    {"errors": 'Рецепт уже в списке покупок'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            else:
+                return self.add_to_list(ShoppingCart, request.user, pk)
+        if request.method == 'DELETE':
+            try:
+                return self.remove_from_list(ShoppingCart, request.user, pk)
+            except ObjectDoesNotExist:
+                return response.Response(
+                    {"errors": 'Удаляемого рецепта нет в сиске покупок'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+    @action(
+        detail=True,
+        methods=['POST', 'DELETE'],
+        permission_classes=[IsAuthenticated]
+    )
+    def favorite(self, request, pk):
+        if request.method == 'POST':
+            if Favorites.objects.filter(recipe_id=pk, user=request.user):
+                return response.Response(
+                    {"errors": 'Рецепт уже в избранном'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            else:
+                return self.add_to_list(Favorites, request.user, pk)
+        if request.method == 'DELETE':
+            try:
+                return self.remove_from_list(Favorites, request.user, pk)
+            except ObjectDoesNotExist:
+                return response.Response(
+                    {"errors": 'Удаляемого рецепта нет в избранном'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
 
 class BaseListRetrieveViewSet(

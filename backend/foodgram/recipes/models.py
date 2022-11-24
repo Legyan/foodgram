@@ -54,7 +54,8 @@ class RecipeIngredient(models.Model):
     )
     ingredient = models.ForeignKey(
         'Ingredient',
-        blank=False, null=False,
+        blank=False,
+        null=False,
         on_delete=models.CASCADE,
         related_name='recipes'
     )
