@@ -10,7 +10,7 @@ from rest_framework import response, status
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 
-from api.filters import RecipeFilter
+from api.filters import IngredientSearchFilter, RecipeFilter
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (IngredientSerializer,
                              ReadRecipeSerializer,
@@ -24,7 +24,7 @@ from users.models import Subscription, User
 
 class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюсет рецептов"""
-    queryset = Recipe.objects.all()
+    queryset = Recipe.objects.all().order_by('-id')
     permission_classes = (IsAuthorOrReadOnly,)
     pagination_class = LimitOffsetPagination
     filter_backends = (DjangoFilterBackend,)
@@ -37,21 +37,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-
-#    def list(self, request, *args, **kwargs):
-#        queryset = self.filter_queryset(self.get_queryset())
-#
-#        page = self.paginate_queryset(queryset)
-#        if page is not None:
-#            serializer = self.get_serializer(
-#                page, many=True, context={'request': request}
-#            )
-#            return self.get_paginated_response(serializer.data)
-#
-#        serializer = self.get_serializer(
-#            queryset, many=True, context={'request': request}
-#        )
-#        return response.Response(serializer.data)
 
     def add_to_list(self, model, user, recipe_id):
         model.objects.create(
@@ -75,6 +60,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated]
     )
     def shopping_cart(self, request, pk):
+        """Метод добавления/удаления рецепта из списка покупок"""
         if request.method == 'POST':
             if ShoppingCart.objects.filter(recipe_id=pk, user=request.user):
                 return response.Response(
@@ -98,6 +84,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated]
     )
     def favorite(self, request, pk):
+        """Метод добавления/удаления рецепта из избранного"""
         if request.method == 'POST':
             if Favorites.objects.filter(recipe_id=pk, user=request.user):
                 return response.Response(
@@ -137,6 +124,8 @@ class IngredientViewSet(BaseListRetrieveViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     pagination_class = LimitOffsetPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = IngredientSearchFilter
 
 
 class SubscriptionViewSet(UserViewSet):

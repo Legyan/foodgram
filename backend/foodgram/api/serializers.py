@@ -1,15 +1,29 @@
 from rest_framework import serializers
 from drf_extra_fields.fields import Base64ImageField
 
-from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
+from recipes.models import (Favorites, Ingredient, Recipe,
+                            RecipeIngredient, ShoppingCart, Tag)
 from users.models import Subscription, User
 
 
 class UserSerializer(serializers.ModelSerializer):
     """Сериализатор пользователей"""
+
+    is_subscribed = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ('email', 'id', 'username', 'first_name', 'last_name')
+        fields = ('email', 'id', 'username',
+                  'first_name', 'last_name', 'is_subscribed')
+
+    def get_is_subscribed(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+            following = user.follower.all().values_list(
+                'following_id', flat=True
+            )
+            return obj.pk in following
+        return False
 
 
 class RecipeInSubscriptionSerializer(serializers.ModelSerializer):
@@ -148,6 +162,30 @@ class ReadRecipeSerializer(serializers.ModelSerializer):
         read_only=True,
         source='recipe_ingredient_related'
     )
+    is_in_shopping_cart = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField()
+
+    def get_is_in_shopping_cart(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+            try:
+                return obj.is_in_shopping_cart
+            except AttributeError:
+                return ShoppingCart.objects.filter(
+                    recipe=obj, user=user
+                ).exists()
+        return False
+
+    def get_is_favorited(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+            try:
+                return obj.is_favorited
+            except AttributeError:
+                return Favorites.objects.filter(
+                    recipe=obj, user=user
+                ).exists()
+        return False
 
     class Meta:
         model = Recipe
