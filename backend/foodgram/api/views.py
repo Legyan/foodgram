@@ -1,3 +1,5 @@
+from django.db.models import Sum
+from django.http import FileResponse, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
@@ -56,8 +58,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return response.Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
-        detail=True,
         methods=['POST', 'DELETE'],
+        detail=True,
         permission_classes=[IsAuthenticated]
     )
     def shopping_cart(self, request, pk):
@@ -81,8 +83,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 )
 
     @action(
-        detail=True,
         methods=['POST', 'DELETE'],
+        detail=True,
         permission_classes=[IsAuthenticated]
     )
     def favorite(self, request, pk):
@@ -104,6 +106,34 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     {"errors": 'Удаляемого рецепта нет в избранном'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
+
+    @action(
+        methods=['GET'],
+        detail=False,
+        permission_classes=[IsAuthenticated]
+    )
+    def download_shopping_cart(self, request):
+        """Метод скачивания списка покупок в формате txt"""
+
+        user = request.user
+        shopping_list = user.shoppingcart_related.values(
+            'recipe__ingredients__name',
+            'recipe__ingredients__measurement_unit',
+        ).annotate(
+            amount=Sum(
+                'recipe__recipe_ingredient_related__amount',
+                distinct=True
+            )
+        )
+        file = open('shopping_cart.txt', 'w')
+        file.write('Список покупок:\n\n')
+        count = 1
+        for line in shopping_list:
+            name, measurement_unit, amount = list(line.values())
+            file.write(f'{count}. {name} ({measurement_unit}) — {amount}\n')
+            count += 1
+        file.close()
+        return HttpResponse(shopping_list, content_type='text/plain')
 
 
 class BaseListRetrieveViewSet(
@@ -138,7 +168,7 @@ class SubscriptionViewSet(UserViewSet):
     """Вьюсет подписок"""
 
     @action(
-        methods=['get'],
+        methods=['GET'],
         detail=False,
         filter_backends=[DjangoFilterBackend],
         permission_classes=[IsAuthenticated]
@@ -156,7 +186,7 @@ class SubscriptionViewSet(UserViewSet):
         return self.get_paginated_response(serializer.data)
 
     @action(
-        methods=['post'],
+        methods=['POST'],
         detail=True,
         permission_classes=[IsAuthenticated]
     )
