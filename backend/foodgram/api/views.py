@@ -24,6 +24,7 @@ from users.models import Subscription, User
 
 class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюсет рецептов"""
+
     queryset = Recipe.objects.all().order_by('-id')
     permission_classes = (IsAuthorOrReadOnly,)
     pagination_class = LimitOffsetPagination
@@ -61,6 +62,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def shopping_cart(self, request, pk):
         """Метод добавления/удаления рецепта из списка покупок"""
+
         if request.method == 'POST':
             if ShoppingCart.objects.filter(recipe_id=pk, user=request.user):
                 return response.Response(
@@ -74,7 +76,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 return self.remove_from_list(ShoppingCart, request.user, pk)
             except ObjectDoesNotExist:
                 return response.Response(
-                    {"errors": 'Удаляемого рецепта нет в сиске покупок'},
+                    {"errors": 'Удаляемого рецепта нет в списке покупок'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
@@ -85,6 +87,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def favorite(self, request, pk):
         """Метод добавления/удаления рецепта из избранного"""
+
         if request.method == 'POST':
             if Favorites.objects.filter(recipe_id=pk, user=request.user):
                 return response.Response(
@@ -109,11 +112,13 @@ class BaseListRetrieveViewSet(
     GenericViewSet
 ):
     """Базовый вьюсет для отображения списка объектов и конкретного объекта"""
+
     pass
 
 
 class TagViewSet(BaseListRetrieveViewSet):
     """Вьюсет ингредиентов"""
+
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     pagination_class = LimitOffsetPagination
@@ -121,6 +126,7 @@ class TagViewSet(BaseListRetrieveViewSet):
 
 class IngredientViewSet(BaseListRetrieveViewSet):
     """Вьюсет ингредиентов"""
+
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     pagination_class = LimitOffsetPagination
@@ -130,6 +136,7 @@ class IngredientViewSet(BaseListRetrieveViewSet):
 
 class SubscriptionViewSet(UserViewSet):
     """Вьюсет подписок"""
+
     @action(
         methods=['get'],
         detail=False,
@@ -138,6 +145,7 @@ class SubscriptionViewSet(UserViewSet):
     )
     def subscriptions(self, request):
         """Метод получения списка авторов в подписках"""
+
         follower_queryset = request.user.follower.all()
         paginated_queryset = self.paginate_queryset(follower_queryset)
         serializer = UserSubscriptionSerializer(
@@ -154,6 +162,7 @@ class SubscriptionViewSet(UserViewSet):
     )
     def subscribe(self, request, id):
         """Метод подписки на автора"""
+
         serializer = SubscriptionSerializer(
             data={'following': id},
             context={'request': self.request}
@@ -166,6 +175,7 @@ class SubscriptionViewSet(UserViewSet):
 
     @subscribe.mapping.delete
     def subscribe_delete(self, request, id):
+
         """Метод отписки от автора"""
         following = get_object_or_404(User, pk=id)
         instance = Subscription.objects.filter(

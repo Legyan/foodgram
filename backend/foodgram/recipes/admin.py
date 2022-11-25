@@ -23,7 +23,6 @@ class TagAdmin(admin.ModelAdmin):
 
     list_display = ('id', 'name', 'color', 'slug')
     search_fields = ('name', 'color', 'slug')
-    empty_value_display = '-пусто-'
 
 
 class IngredientAdmin(admin.ModelAdmin):
@@ -32,7 +31,7 @@ class IngredientAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'measurement_unit')
     list_filter = ('measurement_unit',)
     search_fields = ('name', 'measurement_unit')
-    list_per_page = 500
+    list_per_page = 200
     empty_value_display = '-пусто-'
 
 
