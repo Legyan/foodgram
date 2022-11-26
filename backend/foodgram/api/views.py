@@ -205,8 +205,8 @@ class SubscriptionViewSet(UserViewSet):
 
     @subscribe.mapping.delete
     def subscribe_delete(self, request, id):
-
         """Метод отписки от автора"""
+
         following = get_object_or_404(User, pk=id)
         instance = Subscription.objects.filter(
             user=request.user,
