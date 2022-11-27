@@ -156,7 +156,7 @@ class IngredientViewSet(BaseListRetrieveViewSet):
 
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    pagination_class = LimitOffsetPagination
+    pagination_class = None
     filter_backends = [DjangoFilterBackend]
     filterset_class = IngredientSearchFilter
 
