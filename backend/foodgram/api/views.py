@@ -71,16 +71,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     {"errors": 'Рецепт уже в списке покупок'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            else:
-                return self.add_to_list(ShoppingCart, request.user, pk)
-        if request.method == 'DELETE':
-            try:
-                return self.remove_from_list(ShoppingCart, request.user, pk)
-            except ObjectDoesNotExist:
-                return response.Response(
-                    {"errors": 'Удаляемого рецепта нет в списке покупок'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+            return self.add_to_list(ShoppingCart, request.user, pk)
+        try:
+            return self.remove_from_list(ShoppingCart, request.user, pk)
+        except ObjectDoesNotExist:
+            return response.Response(
+                {"errors": 'Удаляемого рецепта нет в списке покупок'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     @action(
         methods=['POST', 'DELETE'],
@@ -96,16 +94,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     {"errors": 'Рецепт уже в избранном'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            else:
-                return self.add_to_list(Favorites, request.user, pk)
-        if request.method == 'DELETE':
-            try:
-                return self.remove_from_list(Favorites, request.user, pk)
-            except ObjectDoesNotExist:
-                return response.Response(
-                    {"errors": 'Удаляемого рецепта нет в избранном'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+            return self.add_to_list(Favorites, request.user, pk)
+        try:
+            return self.remove_from_list(Favorites, request.user, pk)
+        except ObjectDoesNotExist:
+            return response.Response(
+                {"errors": 'Удаляемого рецепта нет в избранном'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     @action(
         methods=['GET'],
