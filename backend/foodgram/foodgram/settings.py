@@ -120,7 +120,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 6,
 
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ],
 
     'DEFAULT_AUTHENTICATION_CLASSES': [

@@ -7,7 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import response, status
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
@@ -147,7 +147,8 @@ class TagViewSet(BaseListRetrieveViewSet):
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    pagination_class = LimitOffsetPagination
+    permission_classes = (AllowAny,)
+    pagination_class = None
 
 
 class IngredientViewSet(BaseListRetrieveViewSet):

@@ -4,7 +4,7 @@ from recipes.models import User
 
 
 class CreateUserSerializer(ModelSerializer):
-    """Сериализатор для создания ползьзователя"""
+    """Сериализатор для создания пользователя"""
 
     class Meta:
         model = User
