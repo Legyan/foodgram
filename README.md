@@ -44,13 +44,13 @@ docker-compose up -d --build
 ```
 - Выполнить миграции:
 ```
-sudo docker-compose exec infra_backend_1 python manage.py migrate
+sudo docker-compose exec backend python manage.py migrate
 ```
 - Загрузить начальный список ингридиентов:
 ```
-sudo docker-compose exec infra_backend_1 python manage.py load_ingredients
+sudo docker-compose exec backend python manage.py load_ingredients
 ```
 - Подгрузить статические файлы для панели администратора:
 ```
-sudo docker-compose exec infra_backend_1 python manage.py collectstatic --no-input
+sudo docker-compose exec backend python manage.py collectstatic --no-input
 ```
