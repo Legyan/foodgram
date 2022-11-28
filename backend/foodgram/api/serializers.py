@@ -26,12 +26,34 @@ class UserSerializer(serializers.ModelSerializer):
         return False
 
 
-class RecipeInSubscriptionSerializer(serializers.ModelSerializer):
-    """Сериализатор рецептов на странице подписок"""
+class RecipeInListSerializer(serializers.ModelSerializer):
+    """Сериализатор рецептов в списке"""
 
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
+
+
+class RecipeInShoppingCarttSerializer(RecipeInListSerializer):
+    """Сериализатор рецептов в списке"""
+
+    def validate(self, data):
+        user = self.context['request'].user
+        if ShoppingCart.objects.filter(recipe_id=id, user=user):
+            raise serializers.ValidationError(
+                'Рецепт уже в списке для покупок')
+        return data
+
+
+class RecipeInfavoritesSerializer(RecipeInListSerializer):
+    """Сериализатор рецептов в списке"""
+
+    def validate(self, data):
+        user = self.context['request'].user
+        if Favorites.objects.filter(recipe_id=id, user=user):
+            raise serializers.ValidationError(
+                'Рецепт уже в избранном')
+        return data
 
 
 class UserSubscriptionSerializer(serializers.ModelSerializer):
@@ -69,7 +91,7 @@ class UserSubscriptionSerializer(serializers.ModelSerializer):
             recipes = obj.following.recipes.all()
         else:
             recipes = obj.following.recipes.all()[:int(recipes_limit)]
-        return RecipeInSubscriptionSerializer(
+        return RecipeInListSerializer(
             recipes, many=True, read_only=True
         ).data
 
@@ -81,9 +103,13 @@ class UserSubscriptionSerializer(serializers.ModelSerializer):
                 author=obj.following
             ).count()
 
+    def validate(self, data):
+
+        return data
+
 
 class SubscriptionSerializer(serializers.ModelSerializer):
-    """Сериалайзер подписок"""
+    """Сериализатор подписок"""
 
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     following = serializers.PrimaryKeyRelatedField(

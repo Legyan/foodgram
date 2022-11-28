@@ -6,11 +6,6 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
     Если пользователь не автор, то только для чтения
     """
 
-#    def has_permission(self, request, view):
-#        if request.method in permissions.SAFE_METHODS:
-#            return True
-#        return request.user.is_authenticated
-
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True

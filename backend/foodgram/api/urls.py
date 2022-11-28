@@ -4,6 +4,7 @@ from rest_framework import routers
 from api.views import (RecipeViewSet, IngredientViewSet,
                        SubscriptionViewSet, TagViewSet)
 
+
 router = routers.DefaultRouter()
 
 router.register(r'recipes', RecipeViewSet)
