@@ -127,6 +127,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         for line in shopping_list:
             name, unit, amount = list(line.values())
             text += f'{count}. {name} ({unit}) — {amount}\n'
+            count += 1
         return HttpResponse(text, content_type='text/plain')
 
 

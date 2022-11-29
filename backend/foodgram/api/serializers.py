@@ -154,7 +154,7 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'measurement_unit')
 
 
-class ReadRecipeIngredienSerializer(serializers.ModelSerializer):
+class ReadRecipeIngredientSerializer(serializers.ModelSerializer):
     """Сериализатор для отображения ингредиентов рецепта"""
 
     id = serializers.SerializerMethodField()
@@ -175,7 +175,7 @@ class ReadRecipeIngredienSerializer(serializers.ModelSerializer):
         return obj.ingredient.measurement_unit
 
 
-class WriteRecipeIngredienSerializer(serializers.ModelSerializer):
+class WriteRecipeIngredientSerializer(serializers.ModelSerializer):
     """Сериализатор для определения ингредиентов рецепта"""
 
     id = serializers.IntegerField()
@@ -190,7 +190,7 @@ class ReadRecipeSerializer(serializers.ModelSerializer):
 
     author = UserSerializer()
     tags = TagSerializer(many=True, read_only=True)
-    ingredients = ReadRecipeIngredienSerializer(
+    ingredients = ReadRecipeIngredientSerializer(
         many=True,
         read_only=True,
         source='recipe_ingredient_related'
@@ -233,7 +233,7 @@ class WriteRecipeSerializer(serializers.ModelSerializer):
         many=True
     )
     image = Base64ImageField(use_url=True)
-    ingredients = WriteRecipeIngredienSerializer(many=True)
+    ingredients = WriteRecipeIngredientSerializer(many=True)
 
     class Meta:
         model = Recipe
