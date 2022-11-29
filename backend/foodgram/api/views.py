@@ -122,7 +122,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 distinct=True
             )
         )
-        count = 0
+        count = 1
         text = 'Список покупок:\n'
         for line in shopping_list:
             name, unit, amount = list(line.values())
