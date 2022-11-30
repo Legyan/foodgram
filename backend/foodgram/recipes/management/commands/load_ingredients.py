@@ -21,3 +21,9 @@ class Command(BaseCommand):
                 print('Done')
         except FileNotFoundError:
             raise CommandError('Файл с данными отсутствует')
+        except (IndexError, AttributeError):
+            raise CommandError('Ошибка входных данных')
+        except PermissionError:
+            raise CommandError('Ошибка доступа к файлу')
+        except OSError:
+            raise CommandError('Ошибка файловой системы')
