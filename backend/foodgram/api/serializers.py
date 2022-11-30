@@ -31,25 +31,57 @@ class RecipeInListSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
-class RecipeInShoppingCarttSerializer(RecipeInListSerializer):
-    """Сериализатор рецептов в списке"""
+class ShoppingCartSerializer(serializers.ModelSerializer):
+    """Сериализатор списка покупок"""
+
+    class Meta:
+        model = ShoppingCart
+        fields = ('user', 'recipe')
 
     def validate(self, data):
-        user = self.context['request'].user
-        if ShoppingCart.objects.filter(recipe_id=id, user=user):
-            raise serializers.ValidationError(
-                'Рецепт уже в списке для покупок')
+        user = data['user']
+        recipe = data['recipe']
+        action = self.context['action']
+        recipe_in_sh_cart = ShoppingCart.objects.filter(
+            recipe=recipe,
+            user=user
+        )
+        if action == 'remove':
+            if not recipe_in_sh_cart:
+                raise serializers.ValidationError(
+                    detail='Данного рецепта нет в списке покупок')
+            recipe_in_sh_cart.delete()
+        elif action == 'add':
+            if recipe_in_sh_cart:
+                raise serializers.ValidationError(
+                    detail='Рецепт уже в списке покупок')
         return data
 
 
-class RecipeInfavoritesSerializer(RecipeInListSerializer):
-    """Сериализатор рецептов в списке"""
+class FavoritesSerializer(RecipeInListSerializer):
+    """Сериализатор избранного"""
+
+    class Meta:
+        model = Favorites
+        fields = ('user', 'recipe')
 
     def validate(self, data):
-        user = self.context['request'].user
-        if Favorites.objects.filter(recipe_id=id, user=user):
-            raise serializers.ValidationError(
-                'Рецепт уже в избранном')
+        user = data['user']
+        recipe = data['recipe']
+        action = self.context['action']
+        recipe_in_favorites = Favorites.objects.filter(
+            recipe=recipe,
+            user=user
+        )
+        if action == 'remove':
+            if not recipe_in_favorites:
+                raise serializers.ValidationError(
+                    detail='Данного рецепта нет в избранном')
+            recipe_in_favorites.delete()
+        elif action == 'add':
+            if recipe_in_favorites:
+                raise serializers.ValidationError(
+                    detail='Рецепт уже в избранном')
         return data
 
 
@@ -108,26 +140,30 @@ class UserSubscriptionSerializer(serializers.ModelSerializer):
 class SubscriptionSerializer(serializers.ModelSerializer):
     """Сериализатор подписок"""
 
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    following = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all()
-    )
-
     class Meta:
         model = Subscription
-        fields = ['user', 'following']
-        validators = [
-            serializers.UniqueTogetherValidator(
-                queryset=Subscription.objects.all(),
-                fields=['user', 'following'],
-                message='Вы уже подписаны на этого пользователя'
-            )
-        ]
+        fields = ('user', 'following')
 
     def validate(self, data):
-        if self.context['request'].user == data['following']:
+        user = data['user']
+        following = data['following']
+        if user == following:
             raise serializers.ValidationError(
                 'Невозможно подписаться на самого себя')
+        action = self.context['action']
+        user_in_subscription = Subscription.objects.filter(
+            user=user,
+            following=following
+        )
+        if action == 'subscribe':
+            if user_in_subscription:
+                raise serializers.ValidationError(
+                    'Вы уже подписаны на этого пользователя')
+        elif action == 'unsubscribe':
+            if not user_in_subscription:
+                raise serializers.ValidationError(
+                    'Данного пользователя нет в подписках')
+            user_in_subscription.delete()
         return data
 
     def to_representation(self, value):
