@@ -47,6 +47,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
         recipe = Recipe.objects.get(pk=recipe_id)
         serialize_obj = serializer(instance=recipe)
+        serialize_obj.is_valid(raise_exception=True)
         return response.Response(
             data=serialize_obj.data,
             status=status.HTTP_201_CREATED,
