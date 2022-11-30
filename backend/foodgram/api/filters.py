@@ -6,7 +6,6 @@ from users.models import User
 
 class RecipeFilter(filters.FilterSet):
     """Фильтр для вьюсета рецептов"""
-
     tags = filters.AllValuesMultipleFilter(field_name='tags__slug')
     author = filters.ModelChoiceFilter(queryset=User.objects.all())
     is_favorited = filters.BooleanFilter(
@@ -31,7 +30,6 @@ class RecipeFilter(filters.FilterSet):
 
 class IngredientSearchFilter(filters.FilterSet):
     """Фильтр для ингредиентов"""
-
     name = filters.CharFilter(
         field_name="name", lookup_expr='istartswith'
     )

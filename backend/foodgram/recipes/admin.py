@@ -10,7 +10,6 @@ class IngredientInline(admin.TabularInline):
 
 class RecipesAdmin(admin.ModelAdmin):
     """Админка рецептов"""
-
     inlines = (IngredientInline,)
     list_display = ('id', 'author', 'name', 'image', 'text', 'cooking_time')
     list_filter = ('name', 'tags')
@@ -20,14 +19,12 @@ class RecipesAdmin(admin.ModelAdmin):
 
 class TagAdmin(admin.ModelAdmin):
     """Админка тегов"""
-
     list_display = ('id', 'name', 'color', 'slug')
     search_fields = ('name', 'color', 'slug')
 
 
 class IngredientAdmin(admin.ModelAdmin):
     """Админка ингредиентов"""
-
     list_display = ('id', 'name', 'measurement_unit')
     list_filter = ('measurement_unit',)
     search_fields = ('name', 'measurement_unit')

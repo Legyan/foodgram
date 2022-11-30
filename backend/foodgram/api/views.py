@@ -3,14 +3,13 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
-from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import response, status
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 
 from api.filters import IngredientSearchFilter, RecipeFilter
+from api.mixins import BaseListRetrieveViewSet
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (FavoritesSerializer, IngredientSerializer,
                              ReadRecipeSerializer, RecipeInListSerializer,
@@ -23,7 +22,6 @@ from users.models import User
 
 class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюсет рецептов"""
-
     queryset = Recipe.objects.all().order_by('-id')
     permission_classes = (IsAuthorOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
@@ -65,7 +63,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def shopping_cart(self, request, pk):
         """Метод добавления/удаления рецепта из списка покупок"""
-
         recipe = get_object_or_404(Recipe, id=pk)
         if request.method == 'POST':
             return self.add_to_list(
@@ -86,7 +83,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def favorite(self, request, pk):
         """Метод добавления/удаления рецепта из избранного"""
-
         recipe = get_object_or_404(Recipe, id=pk)
         if request.method == 'POST':
             return self.add_to_list(
@@ -107,7 +103,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         """Метод скачивания списка покупок в формате txt"""
-
         user = request.user
         shopping_list = user.shoppingcart_related.values(
             'recipe__ingredients__name',
@@ -127,19 +122,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return HttpResponse(text, content_type='text/plain')
 
 
-class BaseListRetrieveViewSet(
-    ListModelMixin,
-    RetrieveModelMixin,
-    GenericViewSet
-):
-    """Базовый вьюсет для отображения списка объектов и конкретного объекта"""
-
-    pass
-
-
 class TagViewSet(BaseListRetrieveViewSet):
     """Вьюсет ингредиентов"""
-
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (AllowAny,)
@@ -148,7 +132,6 @@ class TagViewSet(BaseListRetrieveViewSet):
 
 class IngredientViewSet(BaseListRetrieveViewSet):
     """Вьюсет ингредиентов"""
-
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     pagination_class = None
@@ -158,7 +141,6 @@ class IngredientViewSet(BaseListRetrieveViewSet):
 
 class SubscriptionViewSet(UserViewSet):
     """Вьюсет подписок"""
-
     @action(
         methods=['GET'],
         detail=False,
@@ -167,7 +149,6 @@ class SubscriptionViewSet(UserViewSet):
     )
     def subscriptions(self, request):
         """Метод получения списка авторов в подписках"""
-
         follower_queryset = request.user.follower.all()
         paginated_queryset = self.paginate_queryset(follower_queryset)
         serializer = UserSubscriptionSerializer(
@@ -184,7 +165,6 @@ class SubscriptionViewSet(UserViewSet):
     )
     def subscribe(self, request, id):
         """Метод подписки на автора"""
-
         serializer = SubscriptionSerializer(
             data={'following': id, 'user': request.user.id},
             context={'request': self.request, 'action': 'subscribe'}
@@ -198,7 +178,6 @@ class SubscriptionViewSet(UserViewSet):
     @subscribe.mapping.delete
     def subscribe_delete(self, request, id):
         """Метод отписки от автора"""
-
         get_object_or_404(User, pk=id)
         serializer = SubscriptionSerializer(
             data={'following': id, 'user': request.user.id},

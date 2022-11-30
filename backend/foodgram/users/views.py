@@ -7,6 +7,5 @@ from users.serializers import CreateUserSerializer
 
 class CreateUserViewSet(CreateModelMixin, GenericViewSet):
     """Вьюсет для создания пользователя"""
-
     queryset = User.objects.all()
     serializer_class = CreateUserSerializer
