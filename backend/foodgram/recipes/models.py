@@ -145,12 +145,14 @@ class BaseRecipeUser(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='%(class)s_related'
+        related_name='%(class)s_related',
+        verbose_name='Рецепт'
     )
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='%(class)s_related'
+        related_name='%(class)s_related',
+        verbose_name='Пользователь'
     )
 
     class Meta:

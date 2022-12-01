@@ -14,10 +14,18 @@ class IngredientInline(admin.TabularInline):
 class RecipesAdmin(admin.ModelAdmin):
     """Админка рецептов"""
     inlines = (IngredientInline,)
-    list_display = ('id', 'author', 'name', 'image', 'text', 'cooking_time')
-    list_filter = ('name', 'tags')
-    search_fields = ('name', 'text')
+    list_display = (
+        'id', 'author', 'name', 'image', 'text',
+        'cooking_time', 'favorites_count'
+    )
+    list_filter = ('tags',)
+    search_fields = ('author', 'name', 'text')
     empty_value_display = '-пусто-'
+
+    def favorites_count(self, obj):
+        return Favorites.objects.filter(recipe=obj).count()
+
+    favorites_count.short_description = 'Добавлений в избранное'
 
 
 class TagAdmin(admin.ModelAdmin):
@@ -30,7 +38,7 @@ class IngredientAdmin(admin.ModelAdmin):
     """Админка ингредиентов"""
     list_display = ('id', 'name', 'measurement_unit')
     list_filter = ('measurement_unit',)
-    search_fields = ('name', 'measurement_unit')
+    search_fields = ('name',)
     list_per_page = 200
     empty_value_display = '-пусто-'
 
