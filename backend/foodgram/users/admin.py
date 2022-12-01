@@ -7,9 +7,9 @@ class UserAdmin(admin.ModelAdmin):
     """Админка пользователей"""
     model = User
     list_display = (
-        'pk', 'username',
+        'id', 'username',
         'first_name', 'last_name',
-        'mail', 'password'
+        'email'
     )
     search_fields = ('username', 'email')
     empty_value_display = '-пусто-'

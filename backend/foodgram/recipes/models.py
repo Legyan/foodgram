@@ -21,7 +21,8 @@ class Recipe(models.Model):
     image = models.ImageField(
         upload_to='recipes/',
         null=True,
-        blank=True
+        blank=True,
+        verbose_name='Изображение'
     )
     text = models.TextField(
         max_length=4000,
@@ -42,6 +43,10 @@ class Recipe(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
+
 
 class RecipeIngredient(models.Model):
     """Модель ингредиентов рецепта"""
@@ -57,7 +62,8 @@ class RecipeIngredient(models.Model):
         blank=False,
         null=False,
         on_delete=models.CASCADE,
-        related_name='recipes'
+        related_name='recipes',
+        verbose_name='Ингредиент'
     )
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
@@ -70,6 +76,8 @@ class RecipeIngredient(models.Model):
                 name='unique ingredient in recipe'
             )
         ]
+        verbose_name = 'Ингредиент в рецепте'
+        verbose_name_plural = 'Ингредиенты в рецепте'
 
 
 class Tag(models.Model):
@@ -96,6 +104,10 @@ class Tag(models.Model):
             raise ValidationError(
                 'Цвет должен быть в HEX формате (#[0-9A-Fa-f]{6})'
             )
+
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
 
 
 class Ingredient(models.Model):
@@ -124,6 +136,8 @@ class Ingredient(models.Model):
                 name='unique set of name and measurment_unit'
             )
         ]
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
 
 
 class BaseRecipeUser(models.Model):
@@ -144,7 +158,7 @@ class BaseRecipeUser(models.Model):
 
 
 class ShoppingCart(BaseRecipeUser):
-    """Модель карты покупок пользователя"""
+    """Модель списка покупок пользователя"""
     class Meta:
         verbose_name = 'Список покупок'
         constraints = [
@@ -153,6 +167,8 @@ class ShoppingCart(BaseRecipeUser):
                 name='unique recipe in user shoppingcart'
             )
         ]
+        verbose_name = 'Рецепт в списке покупок пользователя'
+        verbose_name_plural = 'Рецепты в списке покупок пользователей'
 
 
 class Favorites(BaseRecipeUser):
@@ -165,3 +181,5 @@ class Favorites(BaseRecipeUser):
                 name='unique recipe in user favorites'
             )
         ]
+        verbose_name = 'Рецепт в избранном пользователя'
+        verbose_name_plural = 'Рецепты в избранном пользователей'
