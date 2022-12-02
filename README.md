@@ -14,7 +14,7 @@ admin
 ```
 password:
 ```
-qazwsxcvb321
+admin123456
 ```
 [```Документация```](http://158.160.13.152/api/docs/) доступна на развёрнутом проекте по аресу [```http://localhost/api/docs/```](http://localhost/api/docs/)
 
