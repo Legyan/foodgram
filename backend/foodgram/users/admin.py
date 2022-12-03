@@ -8,8 +8,23 @@ from django.utils.http import urlencode
 from users.models import User
 
 
+class FavoritesInline(admin.TabularInline):
+    model = Favorites
+    verbose_name = 'Избранное'
+    verbose_name_plural = 'Избранное'
+    extra = 1
+
+
+class ShoppingCartInline(admin.TabularInline):
+    model = ShoppingCart
+    verbose_name = 'Список покупок'
+    verbose_name_plural = 'Список покупок'
+    extra = 1
+
+
 class UserAdmin(admin.ModelAdmin):
     """Админка пользователей"""
+    inlines = (FavoritesInline, ShoppingCartInline)
     model = User
     list_display = (
         'id', 'username',
