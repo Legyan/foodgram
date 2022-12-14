@@ -1,5 +1,5 @@
 from django.db.models import Sum
-from django.http import HttpResponse
+from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -10,6 +10,7 @@ from djoser.views import UserViewSet
 
 from api.filters import IngredientSearchFilter, RecipeFilter
 from api.mixins import BaseListRetrieveViewSet
+from api.pdf_create import shopping_list_pdf
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (FavoritesSerializer, IngredientSerializer,
                              ReadRecipeSerializer, RecipeInListSerializer,
@@ -114,12 +115,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
         )
         count = 1
-        text = 'Список покупок:\n'
+        text = []
         for line in shopping_list:
             name, unit, amount = list(line.values())
-            text += f'{count}. {name} ({unit}) — {amount}\n'
+            text.append(f'{name} ({unit}) — {amount}\n')
             count += 1
-        return HttpResponse(text, content_type='text/plain')
+        bytes_file = shopping_list_pdf(text)
+        return FileResponse(
+            bytes_file,
+            as_attachment=True,
+            filename='shopping_list.pdf'
+        )
 
 
 class TagViewSet(BaseListRetrieveViewSet):
