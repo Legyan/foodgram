@@ -118,7 +118,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         text = []
         for line in shopping_list:
             name, unit, amount = list(line.values())
-            text.append(f'{name} ({unit}) — {amount}\n')
+            text.append(f'{name} — {amount} {unit}\n')
             count += 1
         bin_pdf = shopping_list_pdf(text)
         return HttpResponse(bin_pdf, content_type='application/pdf')

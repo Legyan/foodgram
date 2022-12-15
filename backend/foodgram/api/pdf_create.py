@@ -6,8 +6,8 @@ from borb.pdf import PDF
 from borb.pdf import OrderedList
 from borb.pdf.canvas.geometry.rectangle import Rectangle
 from borb.pdf import Alignment
-from borb.pdf.canvas.layout.annotation import square_annotation
-from borb.pdf import HexColor
+# from borb.pdf.canvas.layout.annotation import square_annotation
+# from borb.pdf import HexColor
 from borb.pdf import SingleColumnLayout
 from borb.pdf.canvas.font.simple_font.true_type_font import TrueTypeFont
 
@@ -26,14 +26,8 @@ def shopping_list_pdf(lines):
     r = Rectangle(
         Decimal(59),
         Decimal(848 - 84 - 100),
-        Decimal(595 - 59 * 2),
+        Decimal(595 - 50 * 2),
         Decimal(100),
-    )
-
-    page.add_annotation(
-        square_annotation.SquareAnnotation(
-            r, stroke_color=HexColor("#ff0000")
-        )
     )
     print(Path(__file__).parent)
     font_path = Path(__file__).parent.parent / "data/fonts/Times New Roman.ttf"
@@ -56,7 +50,7 @@ def shopping_list_pdf(lines):
     layout.add(order_list)
     buffer = io.BytesIO()
     PDF.dumps(buffer, doc)
-    buffer.seek(0)
+
     return buffer.getvalue()
 
 
