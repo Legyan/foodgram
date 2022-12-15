@@ -1,8 +1,8 @@
 from borb.pdf import (Alignment, Barcode, BarcodeType,
-                      Document, Page, PageLayout, Paragraph,
-                      PDF, OrderedList, SingleColumnLayout)
-from borb.pdf.canvas.geometry.rectangle import Rectangle
+                      Document, OrderedList, Page, PageLayout,
+                      Paragraph, PDF, SingleColumnLayout)
 from borb.pdf.canvas.font.simple_font.true_type_font import TrueTypeFont
+from borb.pdf.canvas.geometry.rectangle import Rectangle
 from borb.pdf.canvas.layout.annotation.remote_go_to_annotation import (
     RemoteGoToAnnotation,
 )
@@ -15,6 +15,7 @@ from pathlib import Path
 
 
 def add_info(page, pages=1, page_num=1):
+    """Добавление инфофрмации о проекте и номера страницы"""
     font_path = Path(__file__).parent.parent / 'data/fonts/Times New Roman.ttf'
     font = TrueTypeFont.true_type_font_from_file(font_path)
     r = Rectangle(
@@ -68,6 +69,7 @@ def add_info(page, pages=1, page_num=1):
 
 
 def add_orderlist(lines, first_page, font, doc, pages=1, page_num=1):
+    """"Добавление нумерованного списка с покупками"""
     layout: PageLayout = SingleColumnLayout(first_page)
     order_list = OrderedList()
     if len(lines) <= 43:
@@ -87,6 +89,7 @@ def add_orderlist(lines, first_page, font, doc, pages=1, page_num=1):
 
 
 def shopping_list_pdf(lines):
+    """Представление списка для покупок в PDF"""
     doc = Document()
     page = Page()
     doc.add_page(page)
