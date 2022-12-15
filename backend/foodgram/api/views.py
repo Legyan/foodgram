@@ -1,5 +1,5 @@
 from django.db.models import Sum
-from django.http import FileResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -120,12 +120,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             name, unit, amount = list(line.values())
             text.append(f'{name} ({unit}) — {amount}\n')
             count += 1
-        bytes_file = shopping_list_pdf(text)
-        return FileResponse(
-            bytes_file,
-            as_attachment=True,
-            filename='shopping_list.pdf'
-        )
+        bin_pdf = shopping_list_pdf(text)
+        return HttpResponse(bin_pdf, content_type='application/pdf')
 
 
 class TagViewSet(BaseListRetrieveViewSet):
