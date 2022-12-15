@@ -3,6 +3,9 @@ from borb.pdf import (Alignment, Barcode, BarcodeType,
                       PDF, OrderedList, SingleColumnLayout)
 from borb.pdf.canvas.geometry.rectangle import Rectangle
 from borb.pdf.canvas.font.simple_font.true_type_font import TrueTypeFont
+from borb.pdf.canvas.layout.annotation.remote_go_to_annotation import (
+    RemoteGoToAnnotation,
+)
 
 from datetime import datetime
 from decimal import Decimal
@@ -25,6 +28,12 @@ def add_info(page, pages=1, page_num=1):
         Decimal(848 - 680 - 100),
         Decimal(595 - 180 * 2),
         Decimal(30),
+    )
+    page.add_annotation(
+        RemoteGoToAnnotation(
+            r,
+            uri="http://158.160.13.152/recipes",
+        ),
     )
     Barcode(
         "http://158.160.13.152/recipes",
