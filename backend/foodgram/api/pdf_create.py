@@ -1,3 +1,9 @@
+from datetime import datetime
+from decimal import Decimal
+import io
+from math import ceil
+from pathlib import Path
+
 from borb.pdf import (Alignment, Barcode, BarcodeType,
                       Document, OrderedList, Page, PageLayout,
                       Paragraph, PDF, SingleColumnLayout)
@@ -6,12 +12,7 @@ from borb.pdf.canvas.geometry.rectangle import Rectangle
 from borb.pdf.canvas.layout.annotation.remote_go_to_annotation import (
     RemoteGoToAnnotation,
 )
-
-from datetime import datetime
-from decimal import Decimal
-import io
-from math import ceil
-from pathlib import Path
+from foodgram.settings import HOST_NAME
 
 
 def add_info(page, pages=1, page_num=1):
@@ -33,11 +34,11 @@ def add_info(page, pages=1, page_num=1):
     page.add_annotation(
         RemoteGoToAnnotation(
             r,
-            uri="http://158.160.13.152/recipes",
+            uri='http://' + HOST_NAME + '/recipes',
         ),
     )
     Barcode(
-        "http://158.160.13.152/recipes",
+        'http://' + HOST_NAME + '/recipes',
         width=Decimal(96),
         height=Decimal(96),
         type=BarcodeType.QR,
@@ -52,7 +53,7 @@ def add_info(page, pages=1, page_num=1):
         horizontal_alignment=Alignment.CENTERED,
     ).paint(page, r_text)
     Paragraph(
-        'http://158.160.13.152',
+        HOST_NAME,
         font=font,
         font_size=10,
         vertical_alignment=Alignment.BOTTOM,
