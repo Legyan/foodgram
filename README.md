@@ -28,11 +28,15 @@
 ### Запуск проекта
 - Клонировать репозиторий:
 ```
-git clone https://github.com/Legyan/foodgram-project-react
+git clone https://github.com/Legyan/foodgram.git
 ```
 - Перейти в директорию для разворачиания проекта:
 ```
-cd infra/
+cd foodgram/infra/
+```
+- Создать файл .env и заполнить его согласно примеру в infra/.env.example:
+```
+touch .env && nano .env
 ```
 - Запустить проект в контейнере:
 ```
