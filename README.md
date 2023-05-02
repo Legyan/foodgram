@@ -4,15 +4,18 @@
 
 ![workflow](https://github.com/legyan/foodgram-project-react/actions/workflows/main.yml/badge.svg)
 
-[```Ссылка на развернутый проект```](http://158.160.13.152)
+[```foodgram.sytes.net```](http://foodgram.sytes.net)
 
-[```Документация```](http://158.160.13.152/api/docs/) доступна на развёрнутом проекте по аресу [```http://localhost/api/docs/```](http://localhost/api/docs/)
+[```Документация```](http://foodgram.sytes.net/api/docs/) на API c примерами запросов доступна на развёрнутом проекте по аресу http://localhost/api/docs/.
 
 
 ### Описание:
 
 Сервис на котором пользователи могут делиться рецептами, добавлять рецепты в избранное и подписываться на публикации других авторов.
-Также есть возможность создавать список покупок,который содерит информацию об ингредиентах ,которые необходимо приобрести и в каких количествах для приготовления выбранных блюд
+Рецепты могут быть отмечены тегами, которые используются для фильтрации на главной странице. 
+Пользователи также могут добавлять рецепты в список покупок и создавать отчеты в формате PDF с перечнем ингредиентов и их 
+количеством, необходимым для приготовления блюд из списка.
+
 
 
 ### Стек технологий 
@@ -38,9 +41,21 @@ cd foodgram/infra/
 ```
 touch .env && nano .env
 ```
+
+```
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=postgres
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+DB_HOST=db
+DB_PORT=5432
+SECRET_KEY=<DJANGO_SECRET_KEY>
+HOST=<YOUR_HOST>
+```
+
 - Запустить проект в контейнере:
 ```
-docker-compose up -d --build
+sudo docker-compose up -d --build
 ```
 - Выполнить миграции:
 ```
@@ -50,7 +65,7 @@ sudo docker-compose exec backend python manage.py migrate
 ```
 sudo docker-compose exec backend python manage.py createsuperuser
 ```
-- Загрузить начальный список ингридиентов:
+- Загрузить начальный список ингридиентов в базу данных:
 ```
 sudo docker-compose exec backend python manage.py load_ingredients
 ```
@@ -58,3 +73,5 @@ sudo docker-compose exec backend python manage.py load_ingredients
 ```
 sudo docker-compose exec backend python manage.py collectstatic --no-input
 ```
+
+Добавление новых тегов осуществляется через [```панель администратора Django```](http://localhost/api/admin/).
