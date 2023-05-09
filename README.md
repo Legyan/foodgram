@@ -2,7 +2,7 @@
 
 Продуктовый помощник
 
-![workflow](https://github.com/legyan/foodgram-project-react/actions/workflows/main.yml/badge.svg)
+![workflow](https://github.com/legyan/foodgram/actions/workflows/main.yml/badge.svg)
 
 [```foodgram.sytes.net```](http://foodgram.sytes.net)
 
@@ -39,7 +39,7 @@ cd foodgram/infra/
 ```
 - Создать файл .env и заполнить его согласно примеру в infra/.env.example:
 ```
-touch .env && nano .env
+nano .env
 ```
 
 ```
@@ -54,22 +54,31 @@ HOST=<YOUR_HOST>
 ```
 
 - Собрать и запустить проект в docker-compose:
+
 ```
 sudo docker-compose up -d --build
 ```
+
 - Выполнить миграции:
+
 ```
 sudo docker-compose exec backend python manage.py migrate
 ```
+
 - Создать пользователя с правами администратора в django:
+
 ```
 sudo docker-compose exec backend python manage.py createsuperuser
 ```
+
 - Загрузить начальный список ингридиентов в базу данных:
+
 ```
 sudo docker-compose exec backend python manage.py load_ingredients
 ```
+
 - Подгрузить статические файлы для панели администратора:
+
 ```
 sudo docker-compose exec backend python manage.py collectstatic --no-input
 ```
